@@ -2,7 +2,7 @@
 #!desc = iOS可巨魔版本的短信转发
 #!author = pujie1216[https://github.com/pujie1216]
 #!homePage = https://github.com/pujie1216/ScriptForSelf/tree/main
-#!icon = https://github.com/pppscn/SmsForwarder/blob/main/pic/SmsForwarder.png
+#!icon = https://raw.githubusercontent.com/pppscn/SmsForwarder/refs/heads/main/pic/SmsForwarder.png
 #!loon_version = 3.2.1(734)
 
 [Argument]
