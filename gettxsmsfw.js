@@ -40,7 +40,7 @@ function main() {
     const smso = JSON.parse(txreqbody);
     const sms = smso?.query?.message?.text ?? '获取TX转发短信失败';
     if (!allsms) {
-        forward = new RegExp(regexstr).test(sms);
+        forward = new RegExp(regexstr, 'i').test(sms);
     }
 
     //使用switch语句,预留自定义通知方式,如有需要,自行参考对应的API文档编写代码
