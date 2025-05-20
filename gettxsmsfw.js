@@ -6,14 +6,14 @@ try {
         tokenetc = notifyl[1].trim();
     } else {
         switch ($argument.notify) {
-        case '钉钉':
-            notify = '0';
-            break;
-        case 'Server酱':
-            notify = '1';
-            break;
-        default:
-            notify = '-1';
+            case '钉钉':
+                notify = '0';
+                break;
+            case 'Server酱':
+                notify = '1';
+                break;
+            default:
+                notify = '-1';
         }
         tokenetc = $argument.tokenetc;
         allsms = $argument.allsms;
@@ -31,13 +31,14 @@ $done();
 
 function main() {
     let txreqbody = '',
-    forward = true;
+        forward = true;
     try {
         txreqbody = $request.body;
     } catch {
         txreqbody = '{"test":"code"}';
     }
     const smso = JSON.parse(txreqbody);
+    const smsender = smso?.query?.sender ?? '获取发送号码失败';
     const sms = smso?.query?.message?.text ?? '获取TX转发短信失败';
     if (!allsms) {
         forward = new RegExp(regexstr, 'i').test(sms);
@@ -46,14 +47,14 @@ function main() {
     //使用switch语句,预留自定义通知方式,如有需要,自行参考对应的API文档编写代码
     if (forward) {
         switch (notify) {
-        case '0':
-            dtnotification(tokenetc, sms);
-            break;
-        case '1':
-            serverchannoti(tokenetc, sms);
-            break;
-        default:
-            $notification.post($script.name, '', '参数不正确,停止运行');
+            case '0':
+                dtnotification(tokenetc, [smsender, sms]);
+                break;
+            case '1':
+                serverchannoti(tokenetc, [smsender, sms]);
+                break;
+            default:
+                $notification.post($script.name, '', '参数不正确,停止运行');
         }
     }
 }
@@ -71,18 +72,18 @@ function postmsg(requrl, reqbody) {
     $httpClient.post(reqparams);
 }
 
-function dtnotification(kwactk, sms) {
+function dtnotification(kwactk, smsender) {
     const kwactkl = kwactk.split('.');
     const dtkeyword = kwactkl[0].trim();
     const dtwebhookurl = 'https://oapi.dingtalk.com/robot/send?access_token=' + kwactkl[1].trim();
-    const reqbody = `{"msgtype":"text","text":{"content":"${dtkeyword}\n${sms}"}}`;
+    const reqbody = `{"msgtype":"text","text":{"content":"${dtkeyword}\n发送号码:${smsender[0]} 短信内容:${smsender[1]}"}}`;
     postmsg(dtwebhookurl, reqbody);
 }
 
-function serverchannoti(sendkey, sms) {
+function serverchannoti(sendkey, smsender) {
     const serverchanurl = String(sendkey).startsWith('sctp')
-         ? `https://${sendkey.match(/^sctp(\d+)t/)[1]}.push.ft07.com/send/${sendkey}.send`
-         : `https://sctapi.ftqq.com/${sendkey}.send`;
-    const reqbody = `{"title":"TX短信转发","desp":"${sms}"}`;
+        ? `https://${sendkey.match(/^sctp(\d+)t/)[1]}.push.ft07.com/send/${sendkey}.send`
+        : `https://sctapi.ftqq.com/${sendkey}.send`;
+    const reqbody = `{"title":"TX短信转发","desp":"发送号码:${smsender[0]} 短信内容:${smsender[1]}"}`;
     postmsg(serverchanurl, reqbody);
 }
