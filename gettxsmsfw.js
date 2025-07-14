@@ -14,6 +14,7 @@ try {
                 break;
             case '企业微信':
                 notify = '2';
+                break;
             default:
                 notify = '-1';
         }
@@ -57,6 +58,7 @@ function main() {
                 break;
             case '2':
                 wxnotification(tokenkey, [smsender, sms]);
+                break;
             default:
                 $notification.post($script.name, '', '参数不正确,停止运行');
         }
